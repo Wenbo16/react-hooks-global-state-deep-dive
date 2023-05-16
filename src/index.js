@@ -77,8 +77,8 @@ const createDispatch = (stateItemMap, getState, reducer) => {
 export const createGlobalState = (initialState) => {
   const stateItemMap = map(initialState, createStateItem);
   return {
-    stateItemUpdaters: Object.freeze(map(stateItemMap, x => x.updater)),
-    stateItemHooks: Object.freeze(map(stateItemMap, x => x.hook)),
+    useGlobalState: name => stateItemMap[name].hook(),
+    setGlobalState: (name, update) => stateItemMap[name].updater(update),
   };
 };
 
@@ -88,7 +88,7 @@ export const createStore = (reducer, initialState, enhancer) => {
   const getState = createGetState(stateItemMap, initialState);
   const dispatch = createDispatch(stateItemMap, getState, reducer);
   return {
-    stateItemHooks: Object.freeze(map(stateItemMap, x => x.hook)),
+    useGlobalState: name => stateItemMap[name].hook(),
     getState,
     dispatch,
   };

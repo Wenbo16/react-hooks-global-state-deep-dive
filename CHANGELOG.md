@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.1.0] - 2018-11-07
+### Changed
+- API changed to useGlobalState/setGlobalState
+
 ## [0.0.5] - 2018-11-06
 ### Changed
 - Store enhancer support
