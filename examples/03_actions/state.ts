@@ -10,7 +10,9 @@ const { setGlobalState, useGlobalState } = createGlobalState({
 });
 
 export const countUp = () => {
-  setGlobalState('counter', v => v + 1);
+  setGlobalState('counter', v => {
+    return v + 1
+  });
 };
 
 export const countDown = () => {

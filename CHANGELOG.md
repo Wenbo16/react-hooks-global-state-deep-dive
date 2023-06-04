@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2018-11-09
+### Changed
+- Hacky/dirty Redux DevTools Extension support
+- Fix type definition
+
 ## [0.1.0] - 2018-11-07
 ### Changed
 - API changed to useGlobalState/setGlobalState

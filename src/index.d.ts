@@ -1,8 +1,8 @@
 export type Update<T> = ((v: T) => T) | T;
 
-export type SetGlobalState<S> = <N extends keyof S, T extends S[N]>(
+export type SetGlobalState<S> = <N extends keyof S>(
   name: N,
-  update: Update<T>,
+  update: Update<S[N]>,
 ) => void;
 
 export type HookResult<T> = [T, (u: Update<T>) => void];
@@ -11,8 +11,7 @@ export type Reducer<S, A> = (state: S, action: A) => S;
 
 export type Dispatch<A> = (action: A) => A;
 
-export type UseGlobalState<S> = <N extends keyof S>(name: N) =>
-  { [K in keyof S]: N extends K ? HookResult<S[K]> : never }[keyof S];
+export type UseGlobalState<S> = <N extends keyof S>(name: N) => HookResult<S[N]>;
 
 export type Store<S, A> = {
   useGlobalState: UseGlobalState<S>,
@@ -37,3 +36,15 @@ export type CreateStore = <S extends {}, A extends {}>(
 
 export const createGlobalState: CreateGlobalState;
 export const createStore: CreateStore;
+
+// for patch redux
+
+export type MiddlewareAPI<S, A> = {
+  getState: () => S,
+  dispatch: Dispatch<A>,
+};
+
+export type Middleware<S, A> =
+  (store: MiddlewareAPI<S, A>) => (next: Dispatch<A>) => (action: A) => A;
+
+export type ApplyMiddleware<S, A> = (...args: Array<Middleware<S, A>>) => Enhancer<S, A>;

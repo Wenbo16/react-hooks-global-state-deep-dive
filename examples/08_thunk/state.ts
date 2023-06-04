@@ -1,6 +1,9 @@
-import { applyMiddleware, combineReducers } from 'redux';
+import { applyMiddleware, combineReducers, compose } from 'redux';
+import reduxLogger from 'redux-logger';
+import reduxThunk from 'redux-thunk';
 
-import { ApplyMiddleware, createStore, Dispatch } from '../../src/index';
+import { reduxDevToolsExt } from '../../src/devtools';
+import { ApplyMiddleware, createStore, Middleware } from '../../src/index';
 
 const initialState = {
   counter: 0,
@@ -13,7 +16,7 @@ const initialState = {
 
 type State = typeof initialState;
 
-type Action = {
+export type Action = {
   type: 'increment',
 } | {
   type: 'decrement',
@@ -59,18 +62,14 @@ const reducer = combineReducers({
   person: personReducer,
 });
 
-const logger = ({ getState }: { getState: () => State }) =>
-  (next: Dispatch<Action>) => (action: Action) => {
-    // tslint:disable no-console
-    console.log('will dispatch', action);
-    const returnValue = next(action);
-    console.log('state after dispatch', getState());
-    // tslint:enable no-console
-    return returnValue;
-  };
-
-export const { dispatch, useGlobalState } = createStore(
+export const { dispatch, useGlobalState } = createStore<State, Action>(
   reducer,
   initialState,
-  (applyMiddleware as unknown as ApplyMiddleware<State, Action>)(logger),
+  compose(
+    (applyMiddleware as unknown as ApplyMiddleware<State, Action>)(
+      reduxThunk as unknown as Middleware<State, Action>,
+      reduxLogger as Middleware<State, Action>,
+    ),
+    reduxDevToolsExt(),
+  ),
 );

@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-import { dispatch, useGlobalState } from './state';
+import { Dispatch } from '../../src/index';
+
+import { Action, dispatch, useGlobalState } from './state';
 
 const setFirstName = (event: React.FormEvent<HTMLInputElement>) => dispatch({
   firstName: event.currentTarget.value,
@@ -17,10 +19,37 @@ const setAge = (event: React.FormEvent<HTMLInputElement>) => dispatch({
   type: 'setAge',
 });
 
+const setRandomFirstName = () => {
+  const dispatchForThunk = dispatch as Dispatch<Action | ((d: Dispatch<Action>) => void)>;
+  dispatchForThunk(async (d: Dispatch<Action>) => {
+    d({
+      firstName: 'Loading...',
+      type: 'setFirstName',
+    });
+    try {
+      const id = Math.floor(100 * Math.random());
+      const url = `https://jsonplaceholder.typicode.com/posts/${id}`;
+      const response = await fetch(url);
+      const body = await response.json();
+      d({
+        firstName: body.title.split(' ')[0],
+        type: 'setFirstName',
+      });
+    } catch (e) {
+      d({
+        firstName: 'ERROR: fetching',
+        type: 'setFirstName',
+      });
+
+    }
+  });
+};
+
 const Person = () => {
   const [value] = useGlobalState('person');
   return (
     <div>
+      <button onClick={setRandomFirstName}>Random First Name</button>
       <div>
         First Name:
         <input

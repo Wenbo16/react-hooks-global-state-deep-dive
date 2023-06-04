@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react';
 
 // utility functions
-
 const map = (obj, func) => {
   const newObj = {};
-  Object.keys(obj).forEach((key) => { newObj[key] = func(obj[key]); });
+  Object.keys(obj).forEach((key) => {
+    newObj[key] = func(obj[key]);
+  });
   return newObj;
 };
-const isFunction = fn => (typeof fn === 'function');
+const isFunction = fn => typeof fn === 'function';
 
 // core functions
-
 const createStateItem = (initialValue) => {
   let value = initialValue;
   const getValue = () => value;
   const listeners = [];
+
   const updater = (funcOrVal) => {
     if (isFunction(funcOrVal)) {
       value = funcOrVal(value);
@@ -23,6 +24,7 @@ const createStateItem = (initialValue) => {
     }
     listeners.forEach(f => f(value));
   };
+
   const hook = () => {
     const [val, setVal] = useState(value);
     useEffect(() => {
@@ -91,5 +93,6 @@ export const createStore = (reducer, initialState, enhancer) => {
     useGlobalState: name => stateItemMap[name].hook(),
     getState,
     dispatch,
+    ...(reducer === null ? { stateItemMap } : {}), // for devtools.js
   };
 };
